@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'frontendloader'
+
+fel = FrontendLoader.new
+case ARGV[0]
+  
+when "init"
+  fel.init_app
+  
+when "view"
+  
+  view_title = ARGV[1]
+  fel.create_view(view_title)
+  
+when "compile"
+  
+  fel.compile  
+  
+end
