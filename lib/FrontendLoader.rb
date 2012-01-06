@@ -43,6 +43,7 @@ class FrontendLoader
       less_files.delete("style.less")
       less_string = ""
       less_files.each { |file|
+        puts "Loading #{file}..."
         file = file.gsub(".less","")
         less_string = less_string + "@import '#{file}'; \n"
         File.open('style.less','w') { |f| 
@@ -50,7 +51,7 @@ class FrontendLoader
          }
       }
       %x[lessc style.less style.css]
-      %x[rm style.less]
+      # %x[rm style.less]
       
     end
     
