@@ -8,18 +8,22 @@ class FrontendLoader
 
   def initialize
     version = '0.0.1'
+    @gem_path = Gem.path[0]+"/gems/frontendloader-"+version
     @resources_path = Gem.path[0]+"/gems/frontendloader-"+version+"/resources"
   end
 
   def init_app    
     config_path = @resources_path+"/FrontendLoader.yml"
+    guard_path = @resources_path+"/Guardfile"
     %x[cp #{config_path} FrontendLoader.yml]
-    %x[cp #{@resources_path}/js/helpers/mustache.js mustache.js]
-    %x[cp #{@resources_path}/js/mootools/mootools.js mootools.js]
-    %x[cp #{@resources_path}/js/mootools/renderView.js renderView.js]
-    %x[cp #{@resources_path}/less/reset.less reset.less]
+    %x[cp #{guard_path} Guardfile]
     puts "Created basic FrontendLoader app"
   end
+
+  def boilerplate
+    load_settings    
+  end
+  
 
   def load_settings
     if File.exists? 'FrontendLoader.yml'

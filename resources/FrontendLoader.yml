@@ -1,5 +1,4 @@
-
-app_name: "my_app"
+# FRONTENDLOADER CONFIG
 
 javascript:
     framework: "mootools"
@@ -7,13 +6,13 @@ javascript:
     compress: false
     prioritize:
     ignore: 
-      -'js.js'
+      -"js.js"
 
 
 css:
     framework: "less"
     directory: "."
-    prioritize: "reset.less"
+    prioritize: 
     ignore: 
 
       
