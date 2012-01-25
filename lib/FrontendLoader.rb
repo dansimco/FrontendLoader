@@ -12,7 +12,12 @@ class FrontendLoader
     @resources_path = Gem.path[0]+"/gems/frontendloader-"+version+"/resources"
   end
 
-  def init_app    
+  def init_app
+    if load_settings then
+      puts "Frontend Loader already initialized"
+      return false
+    end
+      
     config_path = @resources_path+"/FrontendLoader.yml"
     guard_path = @resources_path+"/Guardfile"
     %x[cp #{config_path} FrontendLoader.yml]
