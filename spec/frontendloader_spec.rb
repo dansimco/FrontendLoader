@@ -14,8 +14,6 @@ describe FrontendLoader do
     #Cleanup
     %x[rm FrontEndLoader.yml]
     %x[rm test_view.mustache]
-    %x[rm test_view.less]
-    %x[rm TestView.js]
     %x[rm js.js]
     %x[rm style.css]
   end
@@ -24,18 +22,6 @@ describe FrontendLoader do
     @fel.init_app
     File.exists?("FrontendLoader.yml").should eq true
     @settings = YAML.load_file('FrontendLoader.yml')
-  end
-  
-  it 'should be able to create a view' do
-    @fel.create_view('test_view')
-    File.exists?("test_view.mustache").should eq true
-    File.exists?("test_view.less").should eq true
-    File.exists?("TestView.js").should eq true
-  end
-  
-  it 'should not blow away an existing view' do
-    @fel.create_view('test_view')
-    @fel.create_view('test_view').should eq(false)
   end
   
   it 'should be able to compile' do
