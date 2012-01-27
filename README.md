@@ -6,11 +6,11 @@
 
 ##Usage:
 
-  fel init
+	fel init
   
 Creates a config yaml file, where you can name files and variables, and prioritize the loading of certain scripts and styles.
 
-  fel compile
+	fel compile
   
 - Scans the directory containing FrontendLoader.yml for .less files, .mustache templates and .js scripts. 
 - Compiles the .less files down to css.
