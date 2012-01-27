@@ -4,7 +4,7 @@ Installation:
 
   gem install frontendloader
 
-usage:
+Usage:
 
   fel init
   
