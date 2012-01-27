@@ -1,6 +1,10 @@
-#Frontend Loader
+Frontend Loader
 
-##usage:
+Installation:
+
+  gem install frontendloader
+
+usage:
 
   fel init
   
