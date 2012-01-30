@@ -13,7 +13,8 @@ class FrontendLoader
   end
 
   def init_app
-    if load_settings then
+    
+    if File.exists?  'FrontendLoader.yml' then
       puts "Frontend Loader already initialized"
       return false
     end
@@ -22,7 +23,7 @@ class FrontendLoader
     guard_path = @resources_path+"/Guardfile"
     %x[cp #{config_path} FrontendLoader.yml]
     %x[cp #{guard_path} Guardfile]
-    puts "Created basic FrontendLoader app"
+    puts "Created basic FrontendLoader app, check FrontendLoader.yml for config"
   end
 
   def boilerplate
@@ -31,11 +32,16 @@ class FrontendLoader
   
 
   def load_settings
-    if File.exists? 'FrontendLoader.yml'
-      @settings = YAML.load_file('FrontendLoader.yml')
+    
+    if  ! File.exists?  'FrontendLoader.yml' then
+      init_app
+    end
+    
+    begin
+      @settings = YAML.load_file('FrontendLoader.yml')        
       return true
-    else
-      puts 'Run fel init first yo'
+    rescue Exception => e
+      puts "FrontendLoader.yml could not be parsed as valid YAML, please check your syntax"
       return false
     end
   end
