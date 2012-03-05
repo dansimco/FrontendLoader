@@ -1,6 +1,6 @@
 # FrontendLoader Guardfile
 
-ignore_paths 'js.js','templates.js', 'lfc.js'
+ignore_paths 'js.js','templates.js'
 
 guard 'shell' do
   watch(/(.*).js/) {|m| `fel compile` } 
