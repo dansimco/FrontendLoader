@@ -1,0 +1,1 @@
+var priority=true;var a=true;templates={};templates.priority='<div id="priority"> PRIORITY</div>';templates.a="<div id=\"a\"> A'A'A' yo</div>";

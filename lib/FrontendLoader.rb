@@ -5,20 +5,20 @@ require 'yaml'
 class FrontendLoader
 
   attr_accessor :resources_path
+  attr_accessor :settings
 
   def initialize
-    version = '0.0.3'
+    version = '0.0.4'
     @gem_path = Gem.path[0]+"/gems/frontendloader-"+version
     @resources_path = Gem.path[0]+"/gems/frontendloader-"+version+"/resources"
+    @processors = {}
   end
 
   def init_app
-    
     if File.exists?  'FrontendLoader.yml' then
       puts "Frontend Loader already initialized"
       return false
     end
-      
     config_path = @resources_path+"/FrontendLoader.yml"
     guard_path = @resources_path+"/Guardfile"
     %x[cp #{config_path} FrontendLoader.yml]
@@ -29,14 +29,11 @@ class FrontendLoader
   def boilerplate
     load_settings    
   end
-  
 
   def load_settings
-    
     if  ! File.exists?  'FrontendLoader.yml' then
       init_app
     end
-    
     begin
       @settings = YAML.load_file('FrontendLoader.yml')        
       return true
@@ -46,8 +43,115 @@ class FrontendLoader
     end
   end
   
+  
   def compile
     return false unless load_settings
+
+    #CSS
+    if @settings['css']['enabled'] then
+      css_source_files = Dir.glob("*.#{@settings['css']['format']}")
+      css_source_files = prioritize_files(css_source_files,@settings['css']['prioritize'])
+      css_source_files = clean_ignored_files(css_source_files,@settings['css']['ignore'])
+      begin
+        css_processor_found = require "processors/#{@settings['css']['format']}.rb"
+      rescue Exception => e
+        puts "No processor for #{@settings['css']['format']} found"
+        css_processor_found = false
+      end
+      if css_processor_found then
+        css_processor = CSS_Processor.new
+        css_processor.process(css_source_files)
+      end
+    end
+    
+    #TEMPLATES
+    if @settings['templates']['enabled'] then
+      template_files = Dir.glob("*.#{@settings['templates']['format']}")
+      template_files = prioritize_files(template_files,@settings['templates']['prioritize'])
+      template_files = clean_ignored_files(template_files,@settings['templates']['ignore'])
+      templates_source = "#{@settings['templates']['varname']} = {};\n"
+      template_files.each {|file|
+        template_markup = File.read(file)
+        template_markup.gsub!("\n","")
+        template_markup.gsub!("\"","\\\"")
+        template_markup = template_markup.strip.gsub(/\s{2,}/, ' ')
+        templates_source << "#{@settings['templates']['varname']}['#{file.split('.')[0]}'] = \"#{template_markup}\";\n"
+      }
+    else
+      templates_source = ""
+    end
+    
+    #JS
+    if @settings['javascript']['enabled'] then
+      js_source_files = Dir.glob("*.js")
+      js_source_files = prioritize_files(js_source_files,@settings['javascript']['prioritize'])
+      js_source_files = clean_ignored_files(js_source_files,(@settings['javascript']['ignore'] << 'js.js'))
+      js_source = ""
+      js_source_files.each { |file| 
+        js_source << File.read(file)+"\n"
+      }
+      js_source << templates_source
+      if @settings['javascript']['jsmin'] then
+        begin
+          jsmin = require "jsmin"
+        rescue Exception => e
+          puts "JSmin not installed"
+        end
+        if jsmin then 
+          js_source = JSMin.minify(js_source)
+        end
+      end
+      if @settings['javascript']['yui'] then
+        begin
+          yui = require "yui/compressor"          
+        rescue Exception => e
+          puts "YUI compressor gem not installed"
+        end
+        if yui then
+          compressor = YUI::JavaScriptCompressor.new
+          js_source = compressor.compress(js_source)
+        end
+      end
+      File.open('js.js','w') { |f| 
+       f.write(js_source)
+      }
+    end
+    
+  end
+  
+  def prioritize_files(files, priority_files=[],path="")
+    if priority_files.class != Array then
+      priority_files = []
+    end
+    priority_files.uniq.each {|file|
+      if files.include? file then
+        files.delete file
+      else
+        priority_files.delete file
+      end
+    }
+    prioritized_files = priority_files + files
+    return prioritized_files
+  end
+  
+  def clean_ignored_files(files, ignored_files=[],path="")
+    if ignored_files.class != Array then
+      ignored_files = []
+    end
+    cleaned_list = []
+    ignored_files.uniq.each {|file|
+      if files.include? file then
+        files.delete file
+      end
+    }
+    return files
+  end
+  
+  def compile_old
+
+    
+    
+    
     
     #less
     
@@ -101,58 +205,7 @@ class FrontendLoader
   end
   
   
-  def create_view(view_title)
-    return false unless load_settings
-        
-    style_format = @settings['css']['framework']
-    style_directory = @settings['css']['directory']
-    style_string = ".#{view_title} {
 
-    }
-    "
-    
-    if File.exists? "#{view_title}.#{@settings['css']['framework']}" then
-      puts "View already exists"
-      return false
-    end
-    
-    
-    File.open("#{style_directory}/#{view_title}.less",'w') { |f| 
-      f.write(style_string)
-    }
-    
-    classwords = view_title.split('_')
-    classwords.each {|word|
-      word.capitalize!
-    }
-    
-    classname = classwords.join
-    
-    if classwords.last != "View" then classname = classname+"View" end
-    
-    js_directory = @settings['javascript']['directory']
-    
-    js_string = ""
-    
-    viewtemplate =  File.open("#{@resources_path}/js/mootools/View.js",'r').read
-    js_string = js_string+viewtemplate.gsub('VIEWCLASSNAME',classname).gsub('VIEWTITLE',view_title)
-
-
-    File.open("#{js_directory}/#{classname}.js",'w') { |f| 
-      f.write(js_string)
-    }
-
-    templates_directory = @settings['templates']['directory']
-    templates_format = @settings['templates']['format']
-
-    File.open("#{templates_directory}/#{view_title}.#{templates_format}",'w') { |f| 
-      f.write("")
-    }
-    
-
-  end
-  
-  
   
   
   
