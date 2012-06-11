@@ -11,7 +11,6 @@ class CSS_Processor
          }
       }
       %x[lessc style.less style.css]
-      %x[rm style.less]
     end    
   end
 end

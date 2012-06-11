@@ -62,6 +62,7 @@ class FrontendLoader
         css_processor = CSS_Processor.new
         css_processor.process(css_source_files)
       end
+      puts "Compiled css into css.css"
     end
     
     #TEMPLATES
@@ -77,6 +78,7 @@ class FrontendLoader
         template_markup = template_markup.strip.gsub(/\s{2,}/, ' ')
         templates_source << "#{@settings['templates']['varname']}['#{file.split('.')[0]}'] = \"#{template_markup}\";\n"
       }
+      puts "Compiled templates into #{@settings['templates']['varname']} variable"
     else
       templates_source = ""
     end
@@ -85,6 +87,9 @@ class FrontendLoader
     if @settings['javascript']['enabled'] then
       js_source_files = Dir.glob("*.js")
       js_source_files = prioritize_files(js_source_files,@settings['javascript']['prioritize'])
+      if @settings['javascript']['ignore'].class != Array then
+        @settings['javascript']['ignore'] = []
+      end
       js_source_files = clean_ignored_files(js_source_files,(@settings['javascript']['ignore'] << 'js.js'))
       js_source = ""
       js_source_files.each { |file| 
@@ -115,6 +120,7 @@ class FrontendLoader
       File.open('js.js','w') { |f| 
        f.write(js_source)
       }
+      puts "Compiled javascript into js.js"
     end
     
   end
