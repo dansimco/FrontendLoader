@@ -9,7 +9,7 @@ class FrontendLoader
   attr_accessor :settings
 
   def initialize
-    version = '0.0.5'
+    version = '0.0.6'
     @gem_path = Gem.path[0]+"/gems/frontendloader-"+version
     @resources_path = Gem.path[0]+"/gems/frontendloader-"+version+"/resources"
     @processors = {}
