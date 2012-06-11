@@ -11,11 +11,11 @@ javascript:
 
 css:
     enabled: true
-    format: less
+    format: scss
     prioritize: 
-      - priority.less
+      - priority.scss
     ignore: 
-      - ignored.less
+      - ignored.scss
       
 templates:
     enabled: true

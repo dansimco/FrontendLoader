@@ -50,8 +50,12 @@ class FrontendLoader
     #CSS
     if @settings['css']['enabled'] then
       css_source_files = Dir.glob("*.#{@settings['css']['format']}")
-      css_source_files = prioritize_files(css_source_files,@settings['css']['prioritize'])
-      css_source_files = clean_ignored_files(css_source_files,@settings['css']['ignore'])
+      if @settings['css']['prioritize'] then
+        css_source_files = prioritize_files(css_source_files,@settings['css']['prioritize'])
+      end
+      if @settings['css']['ignore']
+        css_source_files = clean_ignored_files(css_source_files,@settings['css']['ignore'])
+      end
       begin
         css_processor_found = require "processors/#{@settings['css']['format']}.rb"
       rescue Exception => e
@@ -68,8 +72,12 @@ class FrontendLoader
     #TEMPLATES
     if @settings['templates']['enabled'] then
       template_files = Dir.glob("*.#{@settings['templates']['format']}")
-      template_files = prioritize_files(template_files,@settings['templates']['prioritize'])
-      template_files = clean_ignored_files(template_files,@settings['templates']['ignore'])
+      if @settings['templates']['prioritize'] then
+        template_files = prioritize_files(template_files,@settings['templates']['prioritize'])
+      end
+      if @settings['templates']['ignore'] then
+        template_files = clean_ignored_files(template_files,@settings['templates']['ignore'])
+      end
       templates_source = "#{@settings['templates']['varname']} = {};\n"
       template_files.each {|file|
         template_markup = File.read(file)
@@ -86,11 +94,15 @@ class FrontendLoader
     #JS
     if @settings['javascript']['enabled'] then
       js_source_files = Dir.glob("*.js")
-      js_source_files = prioritize_files(js_source_files,@settings['javascript']['prioritize'])
-      if @settings['javascript']['ignore'].class != Array then
-        @settings['javascript']['ignore'] = []
+      if @settings['javascript']['prioritize'] then
+        js_source_files = prioritize_files(js_source_files,@settings['javascript']['prioritize'])
       end
-      js_source_files = clean_ignored_files(js_source_files,(@settings['javascript']['ignore'] << 'js.js'))
+      # if @settings['javascript']['ignore'].class != Array then
+      #   @settings['javascript']['ignore'] = []
+      # end
+      if @settings['javascript']['ignore'] then
+        js_source_files = clean_ignored_files(js_source_files,(@settings['javascript']['ignore'] << 'js.js'))
+      end
       js_source = ""
       js_source_files.each { |file| 
         js_source << File.read(file)+"\n"
