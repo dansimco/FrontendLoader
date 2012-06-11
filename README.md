@@ -17,4 +17,8 @@ Creates a config yaml file, where you can name files and variables, and prioriti
 - Joins the mustache templates into a single javascript object: templates = {}
 - Joins javascript files together (including mustache templates) and yui compresses if set in yml.
 
+    fel watch
+    
+- Watches for file changes and automatically runs fel compile 
+
 **IMPORTANT: Requires less.js & node for .less compilation: see & install http://lesscss.org/#-server-side-usage**
