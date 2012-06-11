@@ -1,0 +1,7 @@
+# 
+
+
+guard 'shell' do
+  watch(%r{app/.*/[^.][^/]+\.(js|css|less|scss|mustache|handlebars|html)})
+  
+end

@@ -1,6 +1,7 @@
 require 'jscat'
 require 'filestojs'
 require 'yaml'
+require 'listen'
 
 class FrontendLoader
 
@@ -20,10 +21,11 @@ class FrontendLoader
       return false
     end
     config_path = @resources_path+"/FrontendLoader.yml"
-    guard_path = @resources_path+"/Guardfile"
+    # guard_path = @resources_path+"/Guardfile"
     %x[cp #{config_path} FrontendLoader.yml]
-    %x[cp #{guard_path} Guardfile]
+    # %x[cp #{guard_path} Guardfile]
     puts "Created basic FrontendLoader app, check FrontendLoader.yml for config"
+    puts "To automatically compile upon file saves, run \"fel listen\""
   end
 
   def boilerplate
@@ -165,61 +167,16 @@ class FrontendLoader
     return files
   end
   
-  def compile_old
 
-    
-    
-    
-    
-    #less
-    
-    less_files = Dir.glob("*.less")
-
-    if less_files.length > 0 then
-
-      less_files.delete("style.less")
-      less_string = ""
-      less_files.each { |file|
-        puts "Loading #{file}..."
-        file = file.gsub(".less","")
-        less_string = less_string + "@import '#{file}'; \n"
-        File.open('style.less','w') { |f| 
-           f.write(less_string)
-         }
-      }
-      %x[lessc style.less style.css]
-      # %x[rm style.less]
-      
+  def listen
+    begin
+      listener = Listen.to("./", :filter => %r{(.*).(js|css|less|scss|mustache|handlebars|html)}, :ignore => [/js.js/,/style.css/]) do
+        compile
+      end
+      listener = listener.ignore(/js.js/,/style.css/)    
+    rescue Exception => e
+      puts "\nListening stopped" 
     end
-    
-    
-    #TEMPLATES
-
-    template_joiner = FilesToJs.new({
-      :file_dir        => '.',
-      :file_format     => @settings['templates']['format'],
-      :js_object_name  => @settings['templates']['varname'],
-      :output          => @settings['templates']['varname']+".js",
-    })
-    template_joiner.write_js
-    
-    
-    
-    #Javascript (includes joined templates)
-    
-
-    javascript = JsCat.new({
-      :js_dir => '.',
-      :prioritize => @settings['javascript']['prioritize'],
-      :ignore => ['js.js'],
-      :compress => @settings['javascript']['compress'],
-      :output => 'js.js'
-    })
-    
-    %x[rm templates.js]
-    
-    puts "Compiled into js.js and style.css"
-    
   end
   
   

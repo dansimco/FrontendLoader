@@ -8,7 +8,6 @@ class CSS_Processor
     }
     engine = Sass::Engine.new(scss_string, :syntax => :scss)
     css = engine.render
-    puts css
     File.open('style.css','w') { |f| 
       f.write(css)
     }

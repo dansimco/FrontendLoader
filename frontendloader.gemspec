@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
     'README.rdoc',
     'lib/FrontEndLoader.rb',
     'lib/processors/less.rb',
+    'lib/processors/scss.rb',
     'resources/FrontEndLoader.yml',
     'resources/Guardfile'
   ]

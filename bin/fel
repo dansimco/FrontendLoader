@@ -6,4 +6,10 @@ when "init"
   fel.init_app
 when "compile"
   fel.compile 
+when "listen"
+  fel.listen
+when "watch"
+  fel.listen
+when "--watch"
+  fel.listen
 end
