@@ -1,15 +1,33 @@
 #!/usr/bin/env ruby
+# encoding: utf-8
+
 require 'frontendloader'
 fel = FrontendLoader.new
 case ARGV[0]
 when "init"
   fel.init_app
 when "compile"
-  fel.compile 
+    if ARGV[1] then
+      fel.compile ARGV[1]
+    else
+      fel.compile       
+    end
 when "listen"
-  fel.listen
+    if ARGV[1] then
+      fel.listen ARGV[1]
+    else
+      fel.listen       
+    end
 when "watch"
-  fel.listen
+    if ARGV[1] then
+      fel.listen ARGV[1]
+    else
+      fel.listen       
+    end
 when "--watch"
-  fel.listen
+    if ARGV[1] then
+      fel.listen ARGV[1]
+    else
+      fel.listen       
+    end
 end

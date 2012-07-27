@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name = "frontendloader"
-  s.version = "0.0.6"
+  s.version = "0.0.7"
   s.authors = ["Daniel Sim","Exploding Box Productions"]
-  s.date = %q{2011-10-28}
+  s.date = %q{2012-07-01}
   s.description = 'Accelerated front end development'
   s.summary = %Q{A command line interface for rapid creation of web app interfaces, compiling less, js and mustache files into two requests}
   s.email = 'dan@explodingbox.com'

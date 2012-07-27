@@ -1,5 +1,3 @@
-require 'jscat'
-require 'filestojs'
 require 'yaml'
 require 'listen'
 
@@ -9,7 +7,7 @@ class FrontendLoader
   attr_accessor :settings
 
   def initialize
-    version = '0.0.6'
+    version = '0.0.7'
     @gem_path = Gem.path[0]+"/gems/frontendloader-"+version
     @resources_path = Gem.path[0]+"/gems/frontendloader-"+version+"/resources"
     @processors = {}
@@ -46,7 +44,11 @@ class FrontendLoader
   end
   
   
-  def compile
+  def compile(dir=false)
+    if dir then
+      Dir.chdir(dir)
+    end
+
     return false unless load_settings
 
     #CSS
@@ -82,7 +84,7 @@ class FrontendLoader
       end
       templates_source = "#{@settings['templates']['varname']} = {};\n"
       template_files.each {|file|
-        template_markup = File.read(file)
+        template_markup = File.open(file, :encoding => "UTF-8").read
         template_markup.gsub!("\n","")
         template_markup.gsub!("\"","\\\"")
         template_markup = template_markup.strip.gsub(/\s{2,}/, ' ')
@@ -107,7 +109,7 @@ class FrontendLoader
       end
       js_source = ""
       js_source_files.each { |file| 
-        js_source << File.read(file)+"\n"
+        js_source << File.open(file,:encoding => "UTF-8").read+"\n"
       }
       js_source << templates_source
       if @settings['javascript']['jsmin'] then
@@ -168,7 +170,10 @@ class FrontendLoader
   end
   
 
-  def listen
+  def listen(dir=false)
+    if dir then
+      Dir.chdir(dir)
+    end
     begin
       listener = Listen.to("./", :filter => %r{(.*).(js|css|less|scss|mustache|handlebars|html)}, :ignore => [/js.js/,/style.css/]) do
         compile
