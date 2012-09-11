@@ -27,23 +27,24 @@ class FrontendLoader
   end
 
   def boilerplate
-    load_settings    
+    load_settings
   end
 
   def load_settings
     if  ! File.exists?  'FrontendLoader.yml' then
-      init_app
+      puts 'FrontendLoader not yet initialized. Please run "fel init" first'
+      return false
     end
     begin
-      @settings = YAML.load_file('FrontendLoader.yml')        
+      @settings = YAML.load_file('FrontendLoader.yml')
       return true
     rescue Exception => e
       puts "FrontendLoader.yml could not be parsed as valid YAML, please check your syntax"
       return false
     end
   end
-  
-  
+
+
   def compile(dir=false)
     if dir then
       Dir.chdir(dir)
@@ -72,7 +73,7 @@ class FrontendLoader
       end
       puts "Compiled css into css.css"
     end
-    
+
     #TEMPLATES
     if @settings['templates']['enabled'] then
       template_files = Dir.glob("*.#{@settings['templates']['format']}")
@@ -94,7 +95,7 @@ class FrontendLoader
     else
       templates_source = ""
     end
-    
+
     #JS
     if @settings['javascript']['enabled'] then
       js_source_files = Dir.glob("*.js")
@@ -108,7 +109,7 @@ class FrontendLoader
         js_source_files = clean_ignored_files(js_source_files,(@settings['javascript']['ignore'] << 'js.js'))
       end
       js_source = ""
-      js_source_files.each { |file| 
+      js_source_files.each { |file|
         js_source << File.open(file,:encoding => "UTF-8").read+"\n"
       }
       js_source << templates_source
@@ -118,13 +119,13 @@ class FrontendLoader
         rescue Exception => e
           puts "JSmin not installed"
         end
-        if jsmin then 
+        if jsmin then
           js_source = JSMin.minify(js_source)
         end
       end
       if @settings['javascript']['yui'] then
         begin
-          yui = require "yui/compressor"          
+          yui = require "yui/compressor"
         rescue Exception => e
           puts "YUI compressor gem not installed"
         end
@@ -133,14 +134,14 @@ class FrontendLoader
           js_source = compressor.compress(js_source)
         end
       end
-      File.open('js.js','w') { |f| 
+      File.open('js.js','w') { |f|
        f.write(js_source)
       }
       puts "Compiled javascript into js.js"
     end
-    
+
   end
-  
+
   def prioritize_files(files, priority_files=[],path="")
     if priority_files.class != Array then
       priority_files = []
@@ -155,7 +156,7 @@ class FrontendLoader
     prioritized_files = priority_files + files
     return prioritized_files
   end
-  
+
   def clean_ignored_files(files, ignored_files=[],path="")
     if ignored_files.class != Array then
       ignored_files = []
@@ -168,7 +169,7 @@ class FrontendLoader
     }
     return files
   end
-  
+
 
   def listen(dir=false)
     if dir then
@@ -178,34 +179,34 @@ class FrontendLoader
       listener = Listen.to("./", :filter => %r{(.*).(js|css|less|scss|mustache|handlebars|html)}, :ignore => [/js.js/,/style.css/]) do
         compile
       end
-      listener = listener.ignore(/js.js/,/style.css/)    
+      listener = listener.ignore(/js.js/,/style.css/)
     rescue Exception => e
-      puts "\nListening stopped" 
+      puts "\nListening stopped"
     end
   end
-  
-  
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 end
